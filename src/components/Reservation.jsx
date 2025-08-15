@@ -1,0 +1,109 @@
+import React from 'react'
+import { HiOutlineArrowNarrowRight } from 'react-icons/hi'
+import axios from 'axios'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+
+const Reservation = () => {
+    const [firstName , setFirstName] = useState("");
+    const [lastName , setLastName] = useState("");
+    const [email , setEmail] = useState("");
+    const [date , setDate] = useState("");
+    const [time , setTime] = useState("");
+    const [phone , setPhone] = useState("");
+    const navigate = useNavigate();
+
+    const HandleReservation = async (e) => {
+        e.preventDefault();
+        try {
+            const {data} = await axios.post(
+            "http://localhost:5000/api/v1/reservation/send",
+            { firstName, lastName, email, phone, date, time },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                withCredentials: true,
+            }
+
+        );
+        toast.success(data.message);
+        setFirstName("");
+        setLastName("");
+        setEmail("");
+        setPhone(0);
+        setDate("");
+        setTime("");
+        navigate("/success");
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    };
+  return (
+    <section className='reservation' id='reservation'>
+        <div className="container">
+            <div className="banner">
+                <img src='/reservation.png' alt='reserve'/>
+            </div>
+            <div className="banner">
+                <div className="reservation_form_box">
+                    <h1>Make a Reservation</h1>
+                    <p>for further questions, please call</p>
+                    <form>
+                        <div>
+                            <input
+                            type='text'
+                            placeholder='first Name'
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            />
+                            <input
+                            type='text'
+                            placeholder='last Name'
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <input
+                            type='date'
+                            placeholder='date'
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            />
+                            <input
+                            type='time'
+                            placeholder='time'
+                            value={time}
+                            onChange={(e) => setTime(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <input
+                            type='email'
+                            placeholder='email'
+                            className='email_tag'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <input
+                            type='number'
+                            placeholder='phone'
+                            className='email_tag'
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <button type='submit' onClick={HandleReservation}>RESERVE NOW{""}<span><HiOutlineArrowNarrowRight/></span></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+  )
+}
+
+export default Reservation
